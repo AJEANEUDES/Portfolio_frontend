@@ -1,65 +1,139 @@
-import Image from "next/image";
+import { cookies } from 'next/headers';
+import ClientWrapper from '@/components/layout/ClientWrapper';
+import Footer from '@/components/layout/Footer';
+import Hero from '@/components/sections/Hero';
+import Services from '@/components/sections/Services';
+import Experiences from '@/components/sections/Experiences';
+import Projects from '@/components/sections/Projects';
+import EducationSection from '@/components/sections/Education';
+import Blog from '@/components/sections/Blog';
+import Publications from '@/components/sections/Publications';
+import References from '@/components/sections/References';
+import Contact from '@/components/sections/Contact';
+import ScrollToTop from '@/components/ui/ScrollToTop';
+import { TranslationsProvider } from '@/components/providers/TranslationsProvider';
+import { getTranslations } from '@/lib/translations';
 
-export default function Home() {
+
+import {
+  getProfile,
+  getServices,
+  getExperiences,
+  getProjects,
+  getEducations,
+  getPosts,
+  getPublications,
+  getSocialLinks,
+  getReferences,
+  getSections,
+} from '@/lib/api';
+import type { SiteSection } from '@/types';
+
+export default async function Home() {
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('locale')?.value || 'fr';
+
+  const [
+    profileData,
+    services,
+    experiences,
+    projects,
+    educations,
+    postsResponse,
+    publications,
+    socialLinks,
+    references,
+    sections,
+    translations,
+
+  ] = await Promise.all([
+    getProfile(locale).catch(() => null),
+    getServices(locale).catch(() => []),
+    getExperiences(locale).catch(() => []),
+    getProjects(locale).catch(() => []),
+    getEducations(locale).catch(() => []),
+    getPosts(locale).catch(() => ({ data: [], meta: { current_page: 1, last_page: 1, per_page: 12, total: 0 } })),
+    getPublications(locale).catch(() => []),
+    getSocialLinks().catch(() => []),
+    getReferences(locale).catch(() => []),
+    getSections(locale).catch(() => []),
+    getTranslations(locale).catch(() => ({})),
+
+  ]);
+
+  // Helper : trouve une section par clé. Retourne null si désactivée ou inexistante.
+  const getSection = (key: string): SiteSection | null => {
+    return sections.find((s) => s.key === key && s.is_active) || null;
+  };
+
+  const servicesSection = getSection('services');
+  const experiencesSection = getSection('experiences');
+  const projectsSection = getSection('projects');
+  const educationSection = getSection('education');
+  const blogSection = getSection('blog');
+  const publicationsSection = getSection('publications');
+  const referencesSection = getSection('references');
+  const contactSection = getSection('contact');
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+       <TranslationsProvider translations={translations}>
+        <ClientWrapper
+          profilePhoto={profileData?.profile.photo}
+          avatar={profileData?.profile.avatar}
+          cvFile={profileData?.profile.cv_file}
+          profileName={profileData?.profile.name}
+          profileTitle={profileData?.profile.title}
+          initialLocale={locale}
+          sections={sections}
+
+        >
+          <main>
+            {profileData && (
+              <Hero profile={profileData.profile } skills={profileData.skills} />
+            )}
+  
+            {servicesSection && (
+              <Services services={services} section={servicesSection} />
+            )}
+
+            {experiencesSection && (
+              <Experiences experiences={experiences} section={experiencesSection} />
+            )}
+
+            {projectsSection && (
+              <Projects projects={projects} section={projectsSection} />
+            )}
+
+            {educationSection && (
+              <EducationSection educations={educations} section={educationSection} />
+            )}
+
+            {blogSection && (
+              <Blog posts={postsResponse.data} section={blogSection} />
+            )}
+
+            {publicationsSection && (
+              <Publications publications={publications} section={publicationsSection} />
+            )}
+
+            {referencesSection && (
+              <References references={references} section={referencesSection} />
+            )}
+
+            {contactSection && (
+              <Contact
+                socialLinks={socialLinks}
+                cvFile={profileData?.profile.cv_file}
+                videoUrl={profileData?.profile.video_url}
+                section={contactSection}
+              />
+            )}
+          </main>
+        </ClientWrapper>
+        <ScrollToTop />
+        <Footer />
+      </TranslationsProvider>
+    </>
   );
 }
