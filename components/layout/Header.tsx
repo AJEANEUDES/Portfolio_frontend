@@ -42,6 +42,7 @@ export default function Header({
     experiences: t('header.experience', 'Expérience'),
     projects: t('header.projects', 'Projets'),
     education: t('header.education', 'Formation'),
+    certifications: t('header.certifications', 'Certifications'),
     blog: t('header.blog', 'Blog'),
     publications: t('header.publications', 'Publications'),
     references: t('header.references', 'Références'),
@@ -163,7 +164,8 @@ export default function Header({
 
           {/* Bloc droit : Langue + CV */}
 
-          {/* <div className="flex items-center gap-2 pr-1">
+          {
+           <div className="flex items-center gap-2 pr-1">
             {languages.length > 1 && onLocaleChange && (
               <LanguageSwitcher
                 languages={languages}
@@ -172,7 +174,7 @@ export default function Header({
               />
             )}
 
-            {cvFile && (
+            {/* {cvFile && (
               <a
                 href={cvFile}
                 target="_blank"
@@ -182,9 +184,10 @@ export default function Header({
                 <Download size={14} />
                 {t('header.cv', 'CV')}
               </a>
-            )}
+            )} */}
             
-          </div> */}
+          </div> 
+          }
 
           
 
@@ -306,18 +309,9 @@ export default function Header({
         </div>
       )}
 
-      {/* Sélecteur de langue — flottant en bas à gauche */}
-          {languages.length > 1 && onLocaleChange && (
-              <div className="fixed left-24 bottom-48 z-60">
-                <LanguageSwitcher
-                  languages={languages}
-                  currentLocale={currentLocale}
-                  onChange={onLocaleChange}
-                />
-              </div>
-          )}
+     
 
-        
+          
     </>
   );
 }

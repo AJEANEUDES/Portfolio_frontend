@@ -13,7 +13,11 @@ import Contact from '@/components/sections/Contact';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 import { TranslationsProvider } from '@/components/providers/TranslationsProvider';
 import { getTranslations } from '@/lib/translations';
+import Certifications from '@/components/sections/Certifications';
 
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 import {
   getProfile,
@@ -26,6 +30,9 @@ import {
   getSocialLinks,
   getReferences,
   getSections,
+  getCertifications,
+
+  
 } from '@/lib/api';
 import type { SiteSection } from '@/types';
 
@@ -45,6 +52,7 @@ export default async function Home() {
     references,
     sections,
     translations,
+    certifications,
 
   ] = await Promise.all([
     getProfile(locale).catch(() => null),
@@ -58,6 +66,7 @@ export default async function Home() {
     getReferences(locale).catch(() => []),
     getSections(locale).catch(() => []),
     getTranslations(locale).catch(() => ({})),
+    getCertifications(locale).catch(() => []),
 
   ]);
 
@@ -73,6 +82,7 @@ export default async function Home() {
   const blogSection = getSection('blog');
   const publicationsSection = getSection('publications');
   const referencesSection = getSection('references');
+  const certificationsSection = getSection('certifications');
   const contactSection = getSection('contact');
 
   return (
@@ -120,6 +130,10 @@ export default async function Home() {
             {referencesSection && (
               <References references={references} section={referencesSection} />
             )}
+
+            {certificationsSection && (
+               <Certifications certifications={certifications} section={certificationsSection} />
+          )}
 
             {contactSection && (
               <Contact

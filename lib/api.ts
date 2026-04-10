@@ -13,6 +13,7 @@ import type {
   Category,
   Reference,
   SiteSection,
+  Certification,
   PaginationMeta,
 
 
@@ -173,5 +174,10 @@ export async function getReferences(locale?: string) {
 
 export async function getSections(locale?: string) {
   const response = await fetchAPI<{ data: SiteSection[] }>('/sections', { locale });
+  return response.data;
+}
+
+export async function getCertifications(locale?: string) {
+  const response = await fetchAPI<{ data: Certification[] }>('/certifications', { locale });
   return response.data;
 }

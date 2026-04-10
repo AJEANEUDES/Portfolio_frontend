@@ -186,3 +186,27 @@ export interface SiteSection {
   order: number;
   is_active: boolean;
 }
+
+
+export interface Certification {
+  slug: string;
+  name: string;
+  issuer: string;
+  issuer_logo: string | null;
+  badge_image: string | null;
+  category: {
+    value: string;
+    label: string;
+  };
+  credential_id: string | null;
+  verification_url: string | null;
+  issued_date: string | null;
+  issued_date_formatted: string | null;
+  expiration_date: string | null;
+  expiration_date_formatted: string | null;
+  is_expired: boolean;
+  is_valid: boolean;
+  description: string | null;
+  skills: string[];
+  is_featured: boolean;
+}
